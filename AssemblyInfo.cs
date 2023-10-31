@@ -22,4 +22,3 @@ using UnityEngine;
     //We can add dependencies to the SystemInitializer attribute, an example would be run
     //a piece of code that gets automatically ran once the ItemCatalog is initialized
     [assembly: HG.Reflection.SearchableAttribute.OptIn]
-
