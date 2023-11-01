@@ -14,7 +14,7 @@ public static class Assets
     public const string prefabsName = "prefabs";
 
     //The direct path to your AssetBundle
-    
+
     public static string IconAssetBundlePath
     {
         get
@@ -32,7 +32,7 @@ public static class Assets
             return System.IO.Path.Combine(System.IO.Path.GetDirectoryName(CromulentItems.CromItems.PInfo.Location), prefabsName);
         }
     }
-    
+
     public static void Init()
     {
         //Loads the assetBundle from the Path, and stores it in the static field.
