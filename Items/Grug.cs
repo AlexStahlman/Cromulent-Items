@@ -25,16 +25,15 @@ namespace CromulentItems
         public static ItemDef myItemDef;
         public static GameObject RockProjectile;
         public static GameObject RockGhost;
+        public static BuffDef myCounterBuffDef;
 
 
         internal static void Init()
         {
             //Generate the basic information for the item
             CreateItem();
-            //CreateProjectile();
             //Now let's turn the tokens we made into actual strings for the game:
             AddTokens();
-
             //You can add your own display rules here, where the first argument passed are the default display rules: the ones used when no specific display rules for a character are found.
             //For this example, we are omitting them, as they are quite a pain to set up without tools like ItemDisplayPlacementHelper
             var displayRules = new ItemDisplayRuleDict(null);
@@ -57,7 +56,7 @@ namespace CromulentItems
             myItemDef.pickupToken = "GrugItem";
             myItemDef.descriptionToken = "GrugDesc";
             myItemDef.loreToken = "GrugDesc";
-            myItemDef.tags = new ItemTag[1] { ItemTag.Healing };
+            myItemDef.tags = new ItemTag[2] { ItemTag.Healing, ItemTag.Damage };
 
             //The tier determines what rarity the item is:
             //Tier1=white, Tier2=green, Tier3=red, Lunar=Lunar, Boss=yellow,
@@ -88,21 +87,30 @@ namespace CromulentItems
             myItemDef.hidden = false;
         }
 
+
         private static void hooks()
         {
 
-            On.RoR2.CharacterBody.OnInventoryChanged += (orig, self) =>
+            On.RoR2.GlobalEventManager.OnCharacterDeath += (orig, globalEventManager, damageReport) =>
             {
-                orig(self);
-                CharacterBody charBody = self.GetComponent<CharacterBody>();
-                charBody.baseCrit += 5f;
+                orig(globalEventManager, damageReport);
+                if (damageReport.attackerMaster?.inventory != null)
+                {
+                    int inventoryCount = damageReport.attackerMaster.inventory.GetItemCount(myItemDef.itemIndex);
+                    if(damageReport.attacker.GetComponent<CharacterBody>().healthComponent.barrier > 0) { 
+                        //do nothing
+                    } else if (inventoryCount > 0)
+                    {
+                        damageReport.attacker.GetComponent<CharacterBody>().healthComponent.AddBarrier(15f);
+                    }
+                }
             };
 
             On.RoR2.GlobalEventManager.OnHitEnemy += (orig, self, damageInfo, victim) =>
             {
                 orig(self, damageInfo, victim);
                 
-                if (damageInfo.attacker && damageInfo.crit)
+                if (damageInfo.attacker)
                 {
                     CharacterBody attackerCharacterBody = damageInfo.attacker.GetComponent<CharacterBody>();
                     CharacterBody victimCharacterBody = victim.GetComponent<CharacterBody>();
@@ -110,15 +118,15 @@ namespace CromulentItems
                     {
                         int inventoryCount = attackerCharacterBody.inventory.GetItemCount(myItemDef.itemIndex);
                         var chosenPosition = victimCharacterBody.transform.position;
-                        if (inventoryCount > 0)
+                        if (inventoryCount > 0 && attackerCharacterBody.healthComponent.barrier > 0 && Util.CheckRoll(10f * damageInfo.procCoefficient))
                         {
                             //here is setting the damage, then the on hit proc damage.
-                            float damageCoefficient = (attackerCharacterBody.healthComponent.fullCombinedHealth / 50f);
+                            attackerCharacterBody.AddBuff(myCounterBuffDef);
+                            float damageCoefficient = (attackerCharacterBody.healthComponent.fullCombinedHealth / 70f) * inventoryCount;
                             float missileDamage = Util.OnHitProcDamage(damageInfo.damage, attackerCharacterBody.damage, damageCoefficient);
 
                             //this is firing the missile
-                            MissileUtils.FireMissile(attackerCharacterBody.corePosition, attackerCharacterBody, damageInfo.procChainMask, victim, missileDamage, false, GlobalEventManager.CommonAssets.missilePrefab, DamageColorIndex.Item, true);
-
+                            MissileUtils.FireMissile(attackerCharacterBody.corePosition, attackerCharacterBody, damageInfo.procChainMask, victim, missileDamage, false, GlobalEventManager.CommonAssets.missilePrefab, DamageColorIndex.Item, false);
                         }
                     }
                 }
@@ -133,10 +141,10 @@ namespace CromulentItems
             LanguageAPI.Add("Grug", "grug...");
 
             //The Pickup is the short text that appears when you first pick this up. This text should be short and to the point, numbers are generally ommited.
-            LanguageAPI.Add("GrugItem", "Gain crit. \nOn crit, rock(et)");
+            LanguageAPI.Add("GrugItem", "Gain barrier. \nOn hit, rock(et)");
 
             //The Description is where you put the actual numbers and give an advanced description.
-            LanguageAPI.Add("GrugDesc", "Gain <style=cIsUtility>+" + 5 + "% crit.</style> \nOn crit, launch a rock that does damage based on about 1/4 your max health. Subsquent items increase crit by 5%");
+            LanguageAPI.Add("GrugDesc", "On kill, gain a barrier if you dont have one.\nOn hit if you have a barrier, launch a rock(et) that does damage based on <style=cIsUtility>+" + 30 + "%</style> of your max health.");
 
             //The Lore is, well, flavor. You can write pretty much whatever you want here.
             LanguageAPI.Add("GrugLore", "He's grug you know");
