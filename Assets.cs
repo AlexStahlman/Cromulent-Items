@@ -10,8 +10,8 @@ public static class Assets
 {
     public static AssetBundle icons;
     public static AssetBundle prefabs;
-    public const string iconsName = "icons";
-    public const string prefabsName = "prefabs";
+    public const string iconsName = "iconsCrom";
+    public const string prefabsName = "prefabsCrom";
 
     //The direct path to your AssetBundle
 

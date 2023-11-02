@@ -47,12 +47,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   StagingPaths: []
   assetBundles:
-  - assetBundleName: prefabs
+  - assetBundleName: prefabsCrom
     assets:
     - {fileID: 3259986013635641120, guid: aa13a06663944c2418a61c209901cf0d, type: 3}
     - {fileID: 5331087984617974496, guid: e9a596bfa14f69347be59ca4794e9085, type: 3}
     - {fileID: 3151096333451693762, guid: b1fd55a8081e3094a93c0fa55da56409, type: 3}
-  - assetBundleName: icons
+  - assetBundleName: iconsCrom
     assets:
     - {fileID: 2800000, guid: b4b853ae297264648a03e7293472b0da, type: 3}
     - {fileID: 2800000, guid: d1714281d0e76c644b197d39e932e300, type: 3}

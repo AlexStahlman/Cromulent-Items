@@ -24,7 +24,6 @@ namespace CromulentItems
         //We need our item definition to persist through our functions, and therefore make it a class field.
         public static ItemDef myItemDef;
         public static GameObject RockProjectile;
-        public static float numItems = 0f;
         public static GameObject RockGhost;
 
 
@@ -97,25 +96,31 @@ namespace CromulentItems
                 orig(self);
                 CharacterBody charBody = self.GetComponent<CharacterBody>();
                 charBody.baseCrit += 5f;
-                numItems += 1;
             };
 
             On.RoR2.GlobalEventManager.OnHitEnemy += (orig, self, damageInfo, victim) =>
             {
                 orig(self, damageInfo, victim);
-
+                
                 if (damageInfo.attacker && damageInfo.crit)
                 {
                     CharacterBody attackerCharacterBody = damageInfo.attacker.GetComponent<CharacterBody>();
                     CharacterBody victimCharacterBody = victim.GetComponent<CharacterBody>();
-                    var chosenPosition = victimCharacterBody.transform.position;
-                    
-                    //here is setting the damage, then the on hit proc damage.
-                    float damageCoefficient = (attackerCharacterBody.healthComponent.fullCombinedHealth/50f);
-                    float missileDamage = Util.OnHitProcDamage(damageInfo.damage, attackerCharacterBody.damage, damageCoefficient);
+                    if (attackerCharacterBody?.inventory)
+                    {
+                        int inventoryCount = attackerCharacterBody.inventory.GetItemCount(myItemDef.itemIndex);
+                        var chosenPosition = victimCharacterBody.transform.position;
+                        if (inventoryCount > 0)
+                        {
+                            //here is setting the damage, then the on hit proc damage.
+                            float damageCoefficient = (attackerCharacterBody.healthComponent.fullCombinedHealth / 50f);
+                            float missileDamage = Util.OnHitProcDamage(damageInfo.damage, attackerCharacterBody.damage, damageCoefficient);
 
-                    //this is firing the missile
-                    MissileUtils.FireMissile(attackerCharacterBody.corePosition, attackerCharacterBody, damageInfo.procChainMask, victim, missileDamage, false, GlobalEventManager.CommonAssets.missilePrefab, DamageColorIndex.Item, true);
+                            //this is firing the missile
+                            MissileUtils.FireMissile(attackerCharacterBody.corePosition, attackerCharacterBody, damageInfo.procChainMask, victim, missileDamage, false, GlobalEventManager.CommonAssets.missilePrefab, DamageColorIndex.Item, true);
+
+                        }
+                    }
                 }
                 
             };
