@@ -2,14 +2,15 @@
 
 This is a Risk of Rain 2 Mod that adds a few items from a friend group into the game.
 
-Current Items:
+## Current Items:
+
 1. The Jacob Blast (Red Item): This item causes a scaling chance (rate of .5%) to activate a 'Tonic' Effect
 
 2. Grug (Green Item): On Kill, make a 15 hp barrier if you do not have one. On hit with a barrier, chance to fire a missile that does ~30% of your total bar (health, shield) damage, scaling with number of items.
 
 
 
-# Patch Notes
+## Patch Notes
 
 - 0.1.3
   - Reworked grug, no more crit funny :/
