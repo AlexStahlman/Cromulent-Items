@@ -26,7 +26,7 @@ namespace CromulentItems
         public const string PluginGUID = PluginAuthor + "." + PluginName;
         public const string PluginAuthor = "Spartan";
         public const string PluginName = "CromulentItems";
-        public const string PluginVersion = "0.1.1";
+        public const string PluginVersion = "0.2.0";
 
         public static BepInEx.Logging.ManualLogSource Log;
         public GameObject multiShopPrefab;
@@ -43,6 +43,7 @@ namespace CromulentItems
             Assets.Init();
             JacobBlast.Init();
             Grug.Init();
+            Respect.Init();
 
             // This line of log will appear in the bepinex console when the Awake method is done.
             Log.LogInfo("CromulentItems successfully loaded.");
@@ -64,10 +65,9 @@ namespace CromulentItems
                 //List<ItemDef> myItems = new() { JacobBlast.myItemDef };
                 // (ItemDef myItem in myItems)
                 //{
-                PickupDropletController.CreatePickupDroplet(PickupCatalog.FindPickupIndex(Grug.myItemDef.itemIndex), transform.position, transform.forward * 20f);
+                PickupDropletController.CreatePickupDroplet(PickupCatalog.FindPickupIndex(Respect.myItemDef.itemIndex), transform.position, transform.forward * 20f);
                 //}
-            }
-            */
+            }*/
         }
     }
 }
